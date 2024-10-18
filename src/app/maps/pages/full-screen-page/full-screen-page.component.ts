@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { Map} from 'mapbox-gl';
+import { Map } from 'mapbox-gl';
 import { environment } from '../../../../environments/environments';
 
 @Component({
