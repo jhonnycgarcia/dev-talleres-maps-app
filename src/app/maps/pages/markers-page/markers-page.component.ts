@@ -2,6 +2,11 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@ang
 import { LngLat, Map, Marker } from 'mapbox-gl';
 import { environment } from '../../../../environments/environments';
 
+interface MarkerAndColor {
+  marker: Marker;
+  color: string;
+}
+
 @Component({
   selector: 'maps-markers-page',
   templateUrl: './markers-page.component.html',
@@ -14,6 +19,7 @@ export class MarkersPageComponent implements AfterViewInit, OnDestroy {
 
   public map?: Map;
   public lnglat: LngLat = new LngLat(-66.90260060005852, 10.483781022919501);
+  public markers: MarkerAndColor[] = [];
 
   ngAfterViewInit(): void {
     if(!this.divMap) { throw new Error('divMap is not defined'); }
@@ -46,11 +52,18 @@ export class MarkersPageComponent implements AfterViewInit, OnDestroy {
   addMarker(lngLat: LngLat, color: string): void {
     if(!this.map) { throw new Error('map is not defined'); }
     const marker = new Marker({
-      color,
-      draggable: true,
-    })
+        color,
+        draggable: true,
+      })
       .setLngLat(lngLat)
       .addTo(this.map);
+
+    this.markers.push({ marker, color });
+  }
+
+  deleteMarker(i: number): void {
+    this.markers[i].marker.remove();
+    this.markers.splice(i, 1);
   }
 
   ngOnDestroy(): void {
