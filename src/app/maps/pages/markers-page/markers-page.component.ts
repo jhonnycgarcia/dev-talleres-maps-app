@@ -66,6 +66,14 @@ export class MarkersPageComponent implements AfterViewInit, OnDestroy {
     this.markers.splice(i, 1);
   }
 
+  flyTo(marker: Marker): void {
+    if(!this.map) { throw new Error('map is not defined'); }
+    this.map.flyTo({
+      center: marker.getLngLat(),
+      zoom: 14
+    });
+  }
+
   ngOnDestroy(): void {
     this.map?.remove();
   }
