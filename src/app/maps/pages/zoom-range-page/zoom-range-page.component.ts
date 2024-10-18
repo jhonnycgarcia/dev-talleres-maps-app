@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-import { Map } from 'mapbox-gl';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { LngLat, Map } from 'mapbox-gl';
 import { environment } from '../../../../environments/environments';
 
 @Component({
@@ -7,13 +7,14 @@ import { environment } from '../../../../environments/environments';
   templateUrl: './zoom-range-page.component.html',
   styleUrl: './zoom-range-page.component.css'
 })
-export class ZoomRangePageComponent implements AfterViewInit {
+export class ZoomRangePageComponent implements AfterViewInit, OnDestroy {
 
   @ViewChild('map')
   public divMap?: ElementRef;
 
   public zoom: number = 9;
   public map?: Map;
+  public lnglat: LngLat = new LngLat(-66.90260060005852, 10.483781022919501);
 
   ngAfterViewInit(): void {
     if(!this.divMap) { throw new Error('divMap is not defined'); }
@@ -21,10 +22,14 @@ export class ZoomRangePageComponent implements AfterViewInit {
       accessToken: environment.mapboxKey,
       container: this.divMap.nativeElement, // container ID
       style: 'mapbox://styles/mapbox/streets-v12', // style URL
-      center: [-74.5, 40], // starting position [lng, lat]
+      center: this.lnglat, // starting position [lng, lat]
       zoom: this.zoom, // starting zoom
     });
     this.mapListener();
+  }
+
+  ngOnDestroy(): void {
+    this.map?.remove();
   }
 
   mapListener(): void {
@@ -38,6 +43,10 @@ export class ZoomRangePageComponent implements AfterViewInit {
     this.map.on('zoomend', (e) => {
       if(this.map!.getZoom() < 18) { return; }
       this.map!.zoomTo(18);
+    });
+
+    this.map.on('moveend', (e) => {
+      this.lnglat = this.map!.getCenter();
     });
   }
 
